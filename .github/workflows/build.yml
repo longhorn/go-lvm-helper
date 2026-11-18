@@ -1,0 +1,29 @@
+name: build
+on:
+  push:
+    branches:
+    - main
+  pull_request:
+  workflow_dispatch:
+jobs:
+  build-amd64:
+    name: Build AMD64 binaries
+    runs-on: ubuntu-latest
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4
+
+    - name: Install make curl git
+      run: |
+        sudo apt update
+        sudo apt-get -y install make curl git
+
+    # Validate and test
+    - name: Run ci
+      run: make ci
+
+    - uses: codecov/codecov-action@b9fd7d16f6d7d1b5d2bec1a2887e65ceed900238 # v4
+      with:
+        files: ./coverage.out
+        flags: unittests
+        token: ${{ secrets.CODECOV_TOKEN }}
